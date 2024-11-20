@@ -3,9 +3,9 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 
-const proximaNova = localFont({
-  src: "./fonts/ProximaNova.otf",
-  variable: "--font-proxima-nova",
+const roboto = localFont({
+  src: "./fonts/Roboto-Regular.ttf",
+  variable: "--font-roboto",
   weight: "500",
 });
 
@@ -24,7 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${proximaNova.variable} antialiased`}>{children}</body>
+      <body className={`${roboto.variable} antialiased`}>{children}</body>
     </html>
   );
 }

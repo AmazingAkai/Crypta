@@ -13,7 +13,10 @@ export async function generateResponse(
     stream: true,
     model: "hf:meta-llama/Meta-Llama-3.1-405B-Instruct",
     messages: [
-      { role: "system", content: "You are a helpful assistant." },
+      {
+        role: "system",
+        content: "You are a helpful assistant. Your name is Crypta.",
+      },
       ...messages,
     ],
   });
