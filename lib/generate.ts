@@ -1,15 +1,23 @@
 import OpenAI from "openai";
 
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-  baseURL: process.env.OPENAI_BASE_URL,
-});
+let client: OpenAI;
 const encoder = new TextEncoder();
+
+function getClient() {
+  if (client) return client;
+
+  client = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+    baseURL: process.env.OPENAI_BASE_URL,
+  });
+
+  return client;
+}
 
 export async function generateResponse(
   messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[]
 ) {
-  const completion = await client.chat.completions.create({
+  const completion = await getClient().chat.completions.create({
     stream: true,
     model: "hf:meta-llama/Meta-Llama-3.1-405B-Instruct",
     messages: [
