@@ -15,11 +15,12 @@ function getClient() {
 }
 
 export async function generateResponse(
+  model: string,
   messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[]
 ) {
   const completion = await getClient().chat.completions.create({
     stream: true,
-    model: "hf:meta-llama/Meta-Llama-3.1-405B-Instruct",
+    model: `hf:${model}`,
     messages: [
       {
         role: "system",

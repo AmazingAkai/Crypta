@@ -1,8 +1,13 @@
 import { generateResponse } from "@/lib/generate";
 import { type NextRequest } from "next/server";
+import { models } from "@/lib/constants";
 
 export async function POST(request: NextRequest) {
-  const { messages } = await request.json();
+  const { model, messages } = await request.json();
+
+  if (!model || !models.find((m) => m.name === model)) {
+    return new Response("Invalid model", { status: 400 });
+  }
 
   if (
     !Array.isArray(messages) ||
@@ -15,6 +20,6 @@ export async function POST(request: NextRequest) {
     return new Response("Invalid messages format", { status: 400 });
   }
 
-  const stream = await generateResponse(messages);
+  const stream = await generateResponse(model, messages);
   return new Response(stream);
 }
