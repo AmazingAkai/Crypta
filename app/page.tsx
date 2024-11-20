@@ -4,9 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Send } from "lucide-react";
+import { Send, Eraser } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
+import { motion } from "framer-motion";
 
 import type { Message } from "@/lib/types";
 
@@ -86,13 +87,17 @@ export default function Home() {
         className="flex flex-col flex-grow overflow-y-auto p-4 space-y-4"
       >
         {messages.map((message, index) => (
-          <div
+          <motion.div
             key={index}
             className={`max-w-lg p-3 rounded-lg text-white ${
               message.role === "user"
                 ? "bg-blue-500 self-end"
                 : "bg-secondary self-start"
             }`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
           >
             {message.content ? (
               <ReactMarkdown
@@ -110,11 +115,20 @@ export default function Home() {
                 <Skeleton className="h-4 w-48" />
               </div>
             )}
-          </div>
+          </motion.div>
         ))}
       </div>
       <div className="relative w-full px-4 py-4 border-t">
-        <div className="relative max-w-2xl mx-auto">
+        <div className="relative max-w-2xl mx-auto flex items-center space-x-2">
+          <Button
+            onClick={() => setMessages([])}
+            variant="destructive"
+            size="icon"
+            disabled={isStreaming}
+          >
+            <Eraser className="w-5 h-5" />
+          </Button>
+
           <Textarea
             ref={textareaRef}
             value={currentInput}
@@ -129,11 +143,11 @@ export default function Home() {
             className="w-full resize-none pr-14 py-4 flex items-center"
             disabled={isStreaming}
           />
-
           <Button
             onClick={sendMessage}
-            className="absolute right-2 bottom-1/2 transform translate-y-1/2 h-10 w-10 p-0"
+            className="absolute right-2 bottom-1/2 transform translate-y-1/2"
             variant="ghost"
+            size="icon"
             disabled={isStreaming}
           >
             <Send className="w-5 h-5" />
