@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Send } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import rehypeHighlight from "rehype-highlight";
 
 import type { Message } from "@/lib/types";
 
@@ -16,13 +18,7 @@ export default function Home() {
   const [isStreaming, setIsStreaming] = useState(false);
 
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
-
-  const scrollToBottom = () => {
-    if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop =
-        chatContainerRef.current.scrollHeight;
-    }
-  };
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const sendMessage = async () => {
     if (!currentInput.trim()) return;
@@ -71,8 +67,17 @@ export default function Home() {
   };
 
   useEffect(() => {
-    scrollToBottom();
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }
   }, [messages]);
+
+  useEffect(() => {
+    if (!isStreaming && textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  }, [isStreaming]);
 
   return (
     <div className="flex flex-col h-screen">
@@ -85,12 +90,17 @@ export default function Home() {
             key={index}
             className={`max-w-lg p-3 rounded-lg text-white ${
               message.role === "user"
-                ? "bg-blue-500  self-end"
+                ? "bg-blue-500 self-end"
                 : "bg-secondary self-start"
             }`}
           >
             {message.content ? (
-              message.content
+              <ReactMarkdown
+                rehypePlugins={[rehypeHighlight]}
+                className="prose prose-invert"
+              >
+                {message.content}
+              </ReactMarkdown>
             ) : (
               <div className="flex flex-col space-y-2">
                 <Skeleton className="h-4 w-96" />
@@ -106,6 +116,7 @@ export default function Home() {
       <div className="relative w-full px-4 py-4 border-t">
         <div className="relative max-w-2xl mx-auto">
           <Textarea
+            ref={textareaRef}
             value={currentInput}
             onChange={(e) => setCurrentInput(e.target.value)}
             onKeyDown={(e) => {
