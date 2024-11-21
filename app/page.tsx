@@ -6,7 +6,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Send, Eraser, Settings, Mic, StopCircle } from "lucide-react";
 import ReactMarkdown from "react-markdown";
-import rehypeHighlight from "rehype-highlight";
+import remarkGfm from "remark-gfm";
+import remarkBreaks from "remark-breaks";
+import rehypeHighlight from "rehype-prism-plus";
 import { motion } from "framer-motion";
 import {
   Dialog,
@@ -23,6 +25,8 @@ import {
 } from "@/components/ui/select";
 import { models } from "@/lib/constants";
 import type { Message } from "@/lib/types";
+
+import "prismjs/themes/prism-tomorrow.css";
 
 const decoder = new TextDecoder();
 const MAX_AUDIO_SIZE = 5 * 1024 * 1024; // 5 MB
@@ -198,7 +202,31 @@ export default function Home() {
               {message.content ? (
                 <ReactMarkdown
                   rehypePlugins={[rehypeHighlight]}
+                  remarkPlugins={[remarkGfm, remarkBreaks]}
                   className="prose prose-invert"
+                  components={{
+                    table: ({ node, ...props }) => (
+                      <table
+                        className="min-w-full table-auto border-collapse border border-gray-300"
+                        {...props}
+                      />
+                    ),
+                    th: ({ node, ...props }) => (
+                      <th
+                        className="border border-gray-300 px-4 py-2 text-left font-bold"
+                        {...props}
+                      />
+                    ),
+                    td: ({ node, ...props }) => (
+                      <td
+                        className="border border-gray-300 px-4 py-2"
+                        {...props}
+                      />
+                    ),
+                    tr: ({ node, ...props }) => (
+                      <tr className="hover:bg-zinc-700" {...props} />
+                    ),
+                  }}
                 >
                   {message.content}
                 </ReactMarkdown>
@@ -261,7 +289,7 @@ export default function Home() {
               }
             }}
             placeholder="Chat with AI"
-            className="w-full resize-none pr-14 py-4 flex items-center"
+            className="w-full resize-none pr-14 flex items-center"
             disabled={isStreaming}
           />
           <Button
