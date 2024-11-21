@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Send, Eraser, Settings } from "lucide-react";
+import { Send, Eraser, Settings, Mic, StopCircle } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
 import { motion } from "framer-motion";
@@ -25,6 +25,7 @@ import { models } from "@/lib/constants";
 import type { Message } from "@/lib/types";
 
 const decoder = new TextDecoder();
+const MAX_AUDIO_SIZE = 5 * 1024 * 1024; // 5 MB
 
 export default function Home() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -32,6 +33,10 @@ export default function Home() {
   const [isStreaming, setIsStreaming] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedModel, setSelectedModel] = useState(models[0].name);
+  const [isRecording, setIsRecording] = useState(false);
+
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
 
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -85,6 +90,78 @@ export default function Home() {
     }
   };
 
+  const startRecording = async () => {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      alert("Your browser does not support audio recording.");
+      return;
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunksRef.current, {
+          type: "audio/webm",
+        });
+        audioChunksRef.current = [];
+
+        const arrayBuffer = await audioBlob.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+
+        if (buffer.byteLength > MAX_AUDIO_SIZE) {
+          alert("Audio file is too large to transcribe.");
+          return;
+        }
+
+        try {
+          const transcriptionResponse = await fetch("/api/transcribe", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ audio: buffer.toString("base64") }),
+          });
+
+          if (!transcriptionResponse.ok) {
+            throw new Error("Failed to transcribe audio.");
+          }
+
+          const transcription = await transcriptionResponse.json();
+          const userMessage: Message = {
+            role: "user",
+            content: transcription.text,
+          };
+
+          setMessages((prev) => [...prev, userMessage]);
+        } catch (err) {
+          console.error("Transcription error:", err);
+          alert("Failed to transcribe audio.");
+        }
+      };
+
+      mediaRecorderRef.current = mediaRecorder;
+      mediaRecorder.start();
+      setIsRecording(true);
+    } catch (error) {
+      console.error("Error accessing microphone:", error);
+      alert("Could not start recording.");
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+    }
+  };
+
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop =
@@ -108,7 +185,7 @@ export default function Home() {
           messages.map((message, index) => (
             <motion.div
               key={index}
-              className={`max-w-lg p-3 rounded-lg text-white ${
+              className={`max-w-screen p-3 rounded-lg text-white ${
                 message.role === "user"
                   ? "bg-blue-500 self-end"
                   : "bg-secondary self-start"
@@ -161,6 +238,17 @@ export default function Home() {
             disabled={isStreaming}
           >
             <Settings className="!w-[1rem] !h-[1rem]" />
+          </Button>
+          <Button
+            onClick={isRecording ? stopRecording : startRecording}
+            className="w-15 h-15 p-3"
+            disabled={isStreaming}
+          >
+            {isRecording ? (
+              <StopCircle className="!w-[1rem] !h-[1rem]" />
+            ) : (
+              <Mic className="!w-[1rem] !h-[1rem]" />
+            )}
           </Button>
           <Textarea
             ref={textareaRef}
