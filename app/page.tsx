@@ -149,18 +149,18 @@ export default function Home() {
           <Button
             onClick={() => setMessages([])}
             variant="destructive"
-            size="icon"
+            className="w-15 h-15 p-3"
             disabled={isStreaming}
           >
-            <Eraser className="w-5 h-5" />
+            <Eraser className="!w-[1rem] !h-[1rem]" />
           </Button>
           <Button
             onClick={() => setIsDialogOpen(true)}
             variant="outline"
-            size="icon"
+            className="w-15 h-15 p-3"
             disabled={isStreaming}
           >
-            <Settings className="w-5 h-5" />
+            <Settings className="!w-[1rem] !h-[1rem]" />
           </Button>
           <Textarea
             ref={textareaRef}
