@@ -289,7 +289,7 @@ export default function Home() {
               }
             }}
             placeholder="Chat with AI"
-            className="w-full resize-none pr-14 flex items-center"
+            className="min-h-11 h-11 w-full resize-none pr-14 flex items-center"
             disabled={isStreaming}
           />
           <Button
