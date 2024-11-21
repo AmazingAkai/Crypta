@@ -232,11 +232,11 @@ export default function Home() {
                 </ReactMarkdown>
               ) : (
                 <div className="flex flex-col space-y-2">
-                  <Skeleton className="h-4 w-96" />
-                  <Skeleton className="h-4 w-96" />
-                  <Skeleton className="h-4 w-96" />
-                  <Skeleton className="h-4 w-96" />
-                  <Skeleton className="h-4 w-48" />
+                  <Skeleton className="h-4 w-48 md:w-96" />
+                  <Skeleton className="h-4 w-48 md:w-96" />
+                  <Skeleton className="h-4 w-48 md:w-96" />
+                  <Skeleton className="h-4 w-48 md:w-96" />
+                  <Skeleton className="h-4 w-24 md:w-48" />
                 </div>
               )}
             </motion.div>
