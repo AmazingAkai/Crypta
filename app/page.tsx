@@ -307,7 +307,7 @@ export default function Home() {
                     ),
                   }}
                 >
-                  {message.content}
+                  {message.content.replace(/\n/gi, "&nbsp; \n")}
                 </ReactMarkdown>
               ) : (
                 <div className="flex flex-col space-y-2">
