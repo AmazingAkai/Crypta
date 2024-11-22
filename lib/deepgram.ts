@@ -42,7 +42,7 @@ export const getAudio = async (text: string): Promise<Buffer | null> => {
 };
 
 const getAudioBuffer = async (
-  stream: ReadableStream<Uint8Array<ArrayBufferLike>>
+  stream: ReadableStream<Uint8Array>
 ): Promise<Buffer> => {
   const reader = stream.getReader();
   const chunks: Uint8Array[] = [];
