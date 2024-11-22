@@ -306,11 +306,11 @@ export default function Home() {
                 </ReactMarkdown>
               ) : (
                 <div className="flex flex-col space-y-2">
-                  <Skeleton className="h-4 w-48 md:w-96" />
-                  <Skeleton className="h-4 w-48 md:w-96" />
-                  <Skeleton className="h-4 w-48 md:w-96" />
-                  <Skeleton className="h-4 w-48 md:w-96" />
-                  <Skeleton className="h-4 w-24 md:w-48" />
+                  <Skeleton className="h-4 w-40 md:w-96" />
+                  <Skeleton className="h-4 w-40 md:w-96" />
+                  <Skeleton className="h-4 w-40 md:w-96" />
+                  <Skeleton className="h-4 w-40 md:w-96" />
+                  <Skeleton className="h-4 w-20 md:w-48" />
                 </div>
               )}
               {message.role === "assistant" && message.content && (
@@ -338,7 +338,7 @@ export default function Home() {
           ))
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
-            <p className="text-[3rem] font-semibold opacity-20 select-none">
+            <p className="text-[1.5rem] md:text-[3rem] font-semibold opacity-20 select-none">
               Write a message to chat with AI
             </p>
           </div>
