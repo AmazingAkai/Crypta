@@ -270,78 +270,14 @@ export default function Home() {
       >
         {messages.length > 0 ? (
           messages.map((message, index) => (
-            <motion.div
+            <MessageContent
               key={index}
-              className={`max-w-screen p-3 rounded-lg text-white ${
-                message.role === "user"
-                  ? "bg-blue-500 self-end"
-                  : "bg-secondary self-start"
-              }`}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              {message.content ? (
-                <ReactMarkdown
-                  rehypePlugins={[rehypeHighlight]}
-                  remarkPlugins={[remarkGfm, remarkBreaks]}
-                  className="prose prose-invert"
-                  components={{
-                    table: ({ node, ...props }) => (
-                      <table
-                        className="min-w-full table-auto border-collapse border border-gray-300"
-                        {...props}
-                      />
-                    ),
-                    th: ({ node, ...props }) => (
-                      <th
-                        className="border border-gray-300 px-4 py-2 text-left font-bold"
-                        {...props}
-                      />
-                    ),
-                    td: ({ node, ...props }) => (
-                      <td
-                        className="border border-gray-300 px-4 py-2"
-                        {...props}
-                      />
-                    ),
-                    tr: ({ node, ...props }) => (
-                      <tr className="hover:bg-zinc-700" {...props} />
-                    ),
-                  }}
-                >
-                  {message.content.replace(/\n/gi, "&nbsp; \n")}
-                </ReactMarkdown>
-              ) : (
-                <div className="flex flex-col space-y-2">
-                  <Skeleton className="h-4 w-40 md:w-96" />
-                  <Skeleton className="h-4 w-40 md:w-96" />
-                  <Skeleton className="h-4 w-40 md:w-96" />
-                  <Skeleton className="h-4 w-40 md:w-96" />
-                  <Skeleton className="h-4 w-20 md:w-48" />
-                </div>
-              )}
-              {message.role === "assistant" && message.content && (
-                <Button
-                  onClick={async () => {
-                    setIsPlaying(true);
-                    const audioBlob = await fetchTTS(message.content);
-                    if (audioBlob) {
-                      playAudio(audioBlob);
-                    } else {
-                      setIsPlaying(false);
-                    }
-                  }}
-                  disabled={isPlaying}
-                  variant="outline"
-                  size="icon"
-                  className="mt-2"
-                >
-                  <Volume2 className="w-6 h-6" />
-                </Button>
-              )}
-            </motion.div>
+              message={message}
+              fetchTTS={fetchTTS}
+              playAudio={playAudio}
+              isPlaying={isPlaying}
+              setIsPlaying={setIsPlaying}
+            />
           ))
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
@@ -460,3 +396,97 @@ export default function Home() {
     </div>
   );
 }
+
+const MessageContent = ({
+  message,
+  fetchTTS,
+  playAudio,
+  isPlaying,
+  setIsPlaying,
+}: {
+  message: Message;
+  fetchTTS: (text: string) => Promise<Blob | null | undefined>;
+  playAudio: (audioBlob: Blob) => void;
+  isPlaying: boolean;
+  setIsPlaying: (isPlaying: boolean) => void;
+}) => {
+  const [isHovered, setIsHovered] = useState(false);
+  const messageRef = useRef(null);
+
+  return (
+    <motion.div
+      ref={messageRef}
+      className={`max-w-screen p-3 rounded-lg text-white relative ${
+        message.role === "user"
+          ? "bg-blue-500 self-end"
+          : "bg-secondary self-start"
+      }`}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+      onMouseEnter={() => setIsHovered(true)} // Track hover
+      onMouseLeave={() => setIsHovered(false)} // Track when hover ends
+    >
+      {message.content ? (
+        <ReactMarkdown
+          rehypePlugins={[rehypeHighlight]}
+          remarkPlugins={[remarkGfm, remarkBreaks]}
+          className="prose prose-invert"
+          components={{
+            table: ({ node, ...props }) => (
+              <table
+                className="min-w-full table-auto border-collapse border border-gray-300"
+                {...props}
+              />
+            ),
+            th: ({ node, ...props }) => (
+              <th
+                className="border border-gray-300 px-4 py-2 text-left font-bold"
+                {...props}
+              />
+            ),
+            td: ({ node, ...props }) => (
+              <td className="border border-gray-300 px-4 py-2" {...props} />
+            ),
+            tr: ({ node, ...props }) => (
+              <tr className="hover:bg-zinc-700" {...props} />
+            ),
+          }}
+        >
+          {message.content.replace(/\n/gi, "&nbsp; \n")}
+        </ReactMarkdown>
+      ) : (
+        <div className="flex flex-col space-y-2">
+          <Skeleton className="h-4 w-40 md:w-96" />
+          <Skeleton className="h-4 w-40 md:w-96" />
+          <Skeleton className="h-4 w-40 md:w-96" />
+          <Skeleton className="h-4 w-40 md:w-96" />
+          <Skeleton className="h-4 w-20 md:w-48" />
+        </div>
+      )}
+
+      {message.role === "assistant" && message.content && (
+        <Button
+          onClick={async () => {
+            setIsPlaying(true);
+            const audioBlob = await fetchTTS(message.content);
+            if (audioBlob) {
+              playAudio(audioBlob);
+            } else {
+              setIsPlaying(false);
+            }
+          }}
+          disabled={isPlaying}
+          variant="outline"
+          size="icon"
+          className={`mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 absolute right-2 bottom-2 ${
+            isHovered ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          <Volume2 className="w-6 h-6" />
+        </Button>
+      )}
+    </motion.div>
+  );
+};
