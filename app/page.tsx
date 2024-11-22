@@ -10,6 +10,7 @@ import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
 import rehypeHighlight from "rehype-prism-plus";
 import { motion } from "framer-motion";
+import { useToast } from "@/hooks/use-toast";
 import {
   Dialog,
   DialogHeader,
@@ -35,9 +36,12 @@ export default function Home() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [currentInput, setCurrentInput] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
+  const [isTranscribing, setIsTranscribing] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedModel, setSelectedModel] = useState(models[0].name);
   const [isRecording, setIsRecording] = useState(false);
+
+  const { toast } = useToast();
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
@@ -89,6 +93,11 @@ export default function Home() {
       }
     } catch (error) {
       console.error("Error streaming message:", error);
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "There was a problem streaming your message.",
+      });
     } finally {
       setIsStreaming(false);
     }
@@ -96,7 +105,11 @@ export default function Home() {
 
   const startRecording = async () => {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      alert("Your browser does not support audio recording.");
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "Your browser does not support audio recording.",
+      });
       return;
     }
 
@@ -111,6 +124,7 @@ export default function Home() {
       };
 
       mediaRecorder.onstop = async () => {
+        setIsTranscribing(true);
         const audioBlob = new Blob(audioChunksRef.current, {
           type: "audio/webm",
         });
@@ -120,7 +134,12 @@ export default function Home() {
         const buffer = Buffer.from(arrayBuffer);
 
         if (buffer.byteLength > MAX_AUDIO_SIZE) {
-          alert("Audio file is too large to transcribe.");
+          toast({
+            variant: "destructive",
+            title: "Uh oh! Failed to transcribe.",
+            description: "Audio file is too large.",
+          });
+          setIsTranscribing(false);
           return;
         }
 
@@ -137,16 +156,16 @@ export default function Home() {
             throw new Error("Failed to transcribe audio.");
           }
 
-          const transcription = await transcriptionResponse.json();
-          const userMessage: Message = {
-            role: "user",
-            content: transcription.text,
-          };
-
-          setMessages((prev) => [...prev, userMessage]);
+          setCurrentInput(await transcriptionResponse.text());
         } catch (err) {
           console.error("Transcription error:", err);
-          alert("Failed to transcribe audio.");
+          toast({
+            variant: "destructive",
+            title: "Uh oh! Something went wrong.",
+            description: "There was a problem transcribing your message.",
+          });
+        } finally {
+          setIsTranscribing(false);
         }
       };
 
@@ -155,7 +174,11 @@ export default function Home() {
       setIsRecording(true);
     } catch (error) {
       console.error("Error accessing microphone:", error);
-      alert("Could not start recording.");
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "Could not access your microphone.",
+      });
     }
   };
 
@@ -255,7 +278,7 @@ export default function Home() {
             onClick={() => setMessages([])}
             variant="destructive"
             className="w-15 h-15 p-3"
-            disabled={isStreaming}
+            disabled={isStreaming || isTranscribing}
           >
             <Eraser className="!w-[1rem] !h-[1rem]" />
           </Button>
@@ -263,14 +286,14 @@ export default function Home() {
             onClick={() => setIsDialogOpen(true)}
             variant="outline"
             className="w-15 h-15 p-3"
-            disabled={isStreaming}
+            disabled={isStreaming || isTranscribing}
           >
             <Settings className="!w-[1rem] !h-[1rem]" />
           </Button>
           <Button
             onClick={isRecording ? stopRecording : startRecording}
             className="w-15 h-15 p-3"
-            disabled={isStreaming}
+            disabled={isStreaming || isTranscribing}
           >
             {isRecording ? (
               <StopCircle className="!w-[1rem] !h-[1rem]" />
@@ -290,14 +313,14 @@ export default function Home() {
             }}
             placeholder="Chat with AI"
             className="min-h-11 h-11 w-full resize-none pr-14 flex items-center"
-            disabled={isStreaming}
+            disabled={isStreaming || isTranscribing}
           />
           <Button
             onClick={sendMessage}
             className="absolute right-2 bottom-1/2 transform translate-y-1/2"
             variant="ghost"
             size="icon"
-            disabled={isStreaming}
+            disabled={isStreaming || isTranscribing}
           >
             <Send className="w-5 h-5" />
           </Button>

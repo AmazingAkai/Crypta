@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-
 import localFont from "next/font/local";
+import { Toaster } from "@/components/ui/toaster";
+
 import "./globals.css";
 
 const roboto = localFont({
@@ -24,7 +25,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${roboto.variable} antialiased`}>{children}</body>
+      <body className={`${roboto.variable} antialiased`}>
+        <main>{children}</main>
+        <Toaster />
+      </body>
     </html>
   );
 }

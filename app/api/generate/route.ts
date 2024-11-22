@@ -2,7 +2,7 @@ import { generateResponse } from "@/lib/generate";
 import { type NextRequest } from "next/server";
 import { models } from "@/lib/constants";
 
-export async function POST(request: NextRequest) {
+export const POST = async (request: NextRequest) => {
   const { model, messages } = await request.json();
 
   if (!model || !models.find((m) => m.name === model)) {
@@ -22,4 +22,4 @@ export async function POST(request: NextRequest) {
 
   const stream = await generateResponse(model, messages);
   return new Response(stream);
-}
+};

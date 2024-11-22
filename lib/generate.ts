@@ -3,7 +3,7 @@ import OpenAI from "openai";
 let client: OpenAI;
 const encoder = new TextEncoder();
 
-function getClient() {
+const getClient = () => {
   if (client) return client;
 
   client = new OpenAI({
@@ -12,19 +12,20 @@ function getClient() {
   });
 
   return client;
-}
+};
 
-export async function generateResponse(
+export const generateResponse = async (
   model: string,
   messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[]
-) {
+) => {
   const completion = await getClient().chat.completions.create({
     stream: true,
     model: `hf:${model}`,
     messages: [
       {
         role: "system",
-        content: "You are a helpful assistant. Your name is Crypta.",
+        content:
+          process.env.OPENAI_PERSONALITY || "You are a helpful assistant.",
       },
       ...messages,
     ],
@@ -44,4 +45,4 @@ export async function generateResponse(
       }
     },
   });
-}
+};
