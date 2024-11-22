@@ -103,6 +103,10 @@ export default function Home() {
   const playAudio = (audioBlob: Blob) => {
     const audio = new Audio(URL.createObjectURL(audioBlob));
     audio.play();
+
+    audio.onended = () => {
+      setIsPlaying(false);
+    };
   };
 
   const sendMessage = async () => {
@@ -322,12 +326,10 @@ export default function Home() {
                 <Button
                   onClick={async () => {
                     setIsPlaying(true);
-                    try {
-                      const audioBlob = await fetchTTS(message.content);
-                      if (audioBlob) {
-                        playAudio(audioBlob);
-                      }
-                    } finally {
+                    const audioBlob = await fetchTTS(message.content);
+                    if (audioBlob) {
+                      playAudio(audioBlob);
+                    } else {
                       setIsPlaying(false);
                     }
                   }}
