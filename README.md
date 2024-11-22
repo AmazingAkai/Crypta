@@ -19,16 +19,11 @@ Crypta is designed to be user-friendly. Here's how to interact with the assistan
 
 ### Audio-to-Text
 
-- Upload your audio file or speak to Crypta, and it will transcribe your spoken words into text.
+- Speak to Crypta, and it will transcribe your spoken words into text.
 
 ### Text-to-Audio
 
-- Provide any text you'd like to be read aloud, and Crypta will generate an audio file for you to listen to.
-
-## Requirements
-
-- Internet access is required for certain features like real-time text-to-speech and speech-to-text conversion.
-- A compatible device to handle the tasks, such as a microphone for audio input.
+- Provide any text you'd like to be read aloud, and Crypta will play it back.
 
 ## Notes
 
