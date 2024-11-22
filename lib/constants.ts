@@ -33,3 +33,54 @@ export const models = [
     description: "Mixtral-8x22B is Mistral's largest fully-open model.",
   },
 ];
+
+export const deepgramTTSModels = [
+  {
+    name: "Asteria",
+    style: "American, feminine",
+  },
+  {
+    name: "Orpheus",
+    style: "American, masculine",
+  },
+  {
+    name: "Angus",
+    style: "Irish, masculine",
+  },
+  {
+    name: "Arcas",
+    style: "American, masculine",
+  },
+  {
+    name: "Athena",
+    style: "British, feminine",
+  },
+  {
+    name: "Helios",
+    style: "British, masculine",
+  },
+  {
+    name: "Hera",
+    style: "American, feminine",
+  },
+  {
+    name: "Luna",
+    style: "American, feminine",
+  },
+  {
+    name: "Orion",
+    style: "American, masculine",
+  },
+  {
+    name: "Perseus",
+    style: "American, masculine",
+  },
+  {
+    name: "Stella",
+    style: "American, feminine",
+  },
+  {
+    name: "Zeus",
+    style: "American, masculine",
+  },
+];

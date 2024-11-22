@@ -23,8 +23,10 @@ import {
   SelectValue,
   SelectContent,
   SelectItem,
+  SelectLabel,
+  SelectGroup,
 } from "@/components/ui/select";
-import { models } from "@/lib/constants";
+import { deepgramTTSModels, models } from "@/lib/constants";
 import type { Message } from "@/lib/types";
 
 import "prismjs/themes/prism-tomorrow.css";
@@ -39,6 +41,9 @@ export default function Home() {
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedModel, setSelectedModel] = useState(models[0].name);
+  const [selectedTTSModel, setSelectedTTSModel] = useState(
+    deepgramTTSModels[0].name
+  );
   const [isRecording, setIsRecording] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -72,7 +77,7 @@ export default function Home() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ text }),
+        body: JSON.stringify({ text, model: selectedTTSModel }),
       });
 
       if (!response.ok) {
@@ -401,25 +406,51 @@ export default function Home() {
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Select Model</DialogTitle>
+                <DialogTitle>Select LLM & TTS model</DialogTitle>
               </DialogHeader>
-              <Select value={selectedModel} onValueChange={setSelectedModel}>
-                <SelectTrigger>
-                  <SelectValue>{selectedModel}</SelectValue>
-                </SelectTrigger>
-                <SelectContent className="max-h-60 overflow-auto">
-                  {models.map((model) => (
-                    <SelectItem key={model.name} value={model.name}>
-                      <div className="flex flex-col">
-                        <span>{model.name}</span>
-                        <span className="text-sm text-gray-500">
-                          {model.description}
-                        </span>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <SelectGroup>
+                <SelectLabel>LLM:</SelectLabel>
+                <Select value={selectedModel} onValueChange={setSelectedModel}>
+                  <SelectTrigger>
+                    <SelectValue>{selectedModel}</SelectValue>
+                  </SelectTrigger>
+                  <SelectContent className="max-h-60 overflow-auto">
+                    {models.map((model) => (
+                      <SelectItem key={model.name} value={model.name}>
+                        <div className="flex flex-col">
+                          <span>{model.name}</span>
+                          <span className="text-sm text-gray-500">
+                            {model.description}
+                          </span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </SelectGroup>
+              <SelectGroup>
+                <SelectLabel>TTS:</SelectLabel>
+                <Select
+                  value={selectedTTSModel}
+                  onValueChange={setSelectedTTSModel}
+                >
+                  <SelectTrigger>
+                    <SelectValue>{selectedTTSModel}</SelectValue>
+                  </SelectTrigger>
+                  <SelectContent className="max-h-60 overflow-auto">
+                    {deepgramTTSModels.map((ttsModel) => (
+                      <SelectItem key={ttsModel.name} value={ttsModel.name}>
+                        <div className="flex flex-col">
+                          <span>{ttsModel.name}</span>
+                          <span className="text-sm text-gray-500">
+                            {ttsModel.style}
+                          </span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </SelectGroup>
             </DialogContent>
           </Dialog>
         </div>

@@ -24,11 +24,14 @@ export const transcribe = async (buffer: Buffer): Promise<string> => {
   return result.results.channels.at(0)?.alternatives.at(0)?.transcript || "";
 };
 
-export const getAudio = async (text: string): Promise<Buffer | null> => {
+export const getAudio = async (
+  text: string,
+  model: string
+): Promise<Buffer | null> => {
   const response = await getClient().speak.request(
     { text },
     {
-      model: "aura-asteria-en",
+      model: `aura-${model.toLowerCase()}-en`,
       encoding: "linear16",
       container: "wav",
     }
