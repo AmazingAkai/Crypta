@@ -7,7 +7,7 @@ export const corsMiddleware = (
     const responseHeaders = {
       "Access-Control-Allow-Origin": process.env.NEXT_ALLOWED_ORIGIN || "*",
       "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      "Access-Control-Allow-Headers": "Content-Type",
     };
 
     if (request.method === "OPTIONS") {
