@@ -407,7 +407,7 @@ export default function Home() {
                 <SelectTrigger>
                   <SelectValue>{selectedModel}</SelectValue>
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="max-h-60 overflow-auto">
                   {models.map((model) => (
                     <SelectItem key={model.name} value={model.name}>
                       <div className="flex flex-col">
