@@ -3,7 +3,7 @@ import OpenAI from "openai";
 let client: OpenAI;
 const encoder = new TextEncoder();
 
-const getClient = () => {
+const getClient = (): OpenAI => {
   if (client) return client;
 
   client = new OpenAI({
@@ -17,7 +17,7 @@ const getClient = () => {
 export const generateResponse = async (
   model: string,
   messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[]
-) => {
+): Promise<ReadableStream<Uint8Array>> => {
   const completion = await getClient().chat.completions.create({
     stream: true,
     model: `hf:${model}`,

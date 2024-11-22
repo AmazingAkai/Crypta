@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Send, Eraser, Settings, Mic, StopCircle } from "lucide-react";
+import { Send, Eraser, Settings, Mic, StopCircle, Volume2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
@@ -40,6 +40,7 @@ export default function Home() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedModel, setSelectedModel] = useState(models[0].name);
   const [isRecording, setIsRecording] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const { toast } = useToast();
 
@@ -48,6 +49,56 @@ export default function Home() {
 
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  const audioCache = useRef<Map<string, Blob>>(new Map());
+
+  const fetchTTS = async (text: string) => {
+    if (audioCache.current.has(text)) {
+      return audioCache.current.get(text);
+    }
+
+    if (text.length === 0 || text.length > 2000) {
+      toast({
+        variant: "destructive",
+        title: "TTS error",
+        description: "Text must be between 1 and 2000 characters.",
+      });
+      return null;
+    }
+
+    try {
+      const response = await fetch("/api/tts", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ text }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch TTS");
+      }
+
+      const buffer = await response.arrayBuffer();
+      const blob = new Blob([buffer], { type: "audio/wav" });
+      audioCache.current.set(text, blob);
+
+      return blob;
+    } catch (error) {
+      console.error("Error fetching TTS:", error);
+      toast({
+        variant: "destructive",
+        title: "TTS error",
+        description: "There was an issue generating the audio.",
+      });
+      return null;
+    }
+  };
+
+  const playAudio = (audioBlob: Blob) => {
+    const audio = new Audio(URL.createObjectURL(audioBlob));
+    audio.play();
+  };
 
   const sendMessage = async () => {
     if (!currentInput.trim()) return;
@@ -262,6 +313,27 @@ export default function Home() {
                   <Skeleton className="h-4 w-24 md:w-48" />
                 </div>
               )}
+              {message.role === "assistant" && message.content && (
+                <Button
+                  onClick={async () => {
+                    setIsPlaying(true);
+                    try {
+                      const audioBlob = await fetchTTS(message.content);
+                      if (audioBlob) {
+                        playAudio(audioBlob);
+                      }
+                    } finally {
+                      setIsPlaying(false);
+                    }
+                  }}
+                  disabled={isPlaying}
+                  variant="outline"
+                  size="icon"
+                  className="mt-2"
+                >
+                  <Volume2 className="w-6 h-6" />
+                </Button>
+              )}
             </motion.div>
           ))
         ) : (
@@ -272,6 +344,7 @@ export default function Home() {
           </div>
         )}
       </div>
+
       <div className="relative w-full px-4 py-4 border-t">
         <div className="relative max-w-2xl mx-auto flex items-center space-x-2">
           <Button
