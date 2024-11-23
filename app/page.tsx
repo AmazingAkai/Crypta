@@ -8,7 +8,6 @@ import { Send, Eraser, Settings, Mic, StopCircle, Volume2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
-import rehypeHighlight from "rehype-prism-plus";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -28,8 +27,6 @@ import {
 } from "@/components/ui/select";
 import { deepgramTTSModels, models } from "@/lib/constants";
 import type { Message } from "@/lib/types";
-
-import "prismjs/themes/prism-tomorrow.css";
 
 const decoder = new TextDecoder();
 const MAX_AUDIO_SIZE = 5 * 1024 * 1024; // 5 MB
@@ -425,12 +422,11 @@ const MessageContent = ({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
-      onMouseEnter={() => setIsHovered(true)} // Track hover
-      onMouseLeave={() => setIsHovered(false)} // Track when hover ends
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       {message.content ? (
         <ReactMarkdown
-          rehypePlugins={[rehypeHighlight]}
           remarkPlugins={[remarkGfm, remarkBreaks]}
           className="prose prose-invert"
           components={{
