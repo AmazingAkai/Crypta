@@ -1,6 +1,5 @@
 # Node modules
 node_modules/
-bun.lockb
 
 # Build output
 .next/

@@ -5,10 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Send, Eraser, Settings, Mic, StopCircle, Volume2 } from "lucide-react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import remarkBreaks from "remark-breaks";
-import rehypeHighlight from "rehype-prism-plus";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -26,10 +22,10 @@ import {
   SelectLabel,
   SelectGroup,
 } from "@/components/ui/select";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { deepgramTTSModels, models } from "@/lib/constants";
 import type { Message } from "@/lib/types";
-
-import "prismjs/themes/prism-tomorrow.css";
 
 const decoder = new TextDecoder();
 const MAX_AUDIO_SIZE = 5 * 1024 * 1024; // 5 MB
@@ -425,36 +421,15 @@ const MessageContent = ({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
-      onMouseEnter={() => setIsHovered(true)} // Track hover
-      onMouseLeave={() => setIsHovered(false)} // Track when hover ends
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       {message.content ? (
         <ReactMarkdown
-          rehypePlugins={[rehypeHighlight]}
-          remarkPlugins={[remarkGfm, remarkBreaks]}
+          remarkPlugins={[remarkGfm]}
           className="prose prose-invert"
-          components={{
-            table: ({ node, ...props }) => (
-              <table
-                className="min-w-full table-auto border-collapse border border-gray-300"
-                {...props}
-              />
-            ),
-            th: ({ node, ...props }) => (
-              <th
-                className="border border-gray-300 px-4 py-2 text-left font-bold"
-                {...props}
-              />
-            ),
-            td: ({ node, ...props }) => (
-              <td className="border border-gray-300 px-4 py-2" {...props} />
-            ),
-            tr: ({ node, ...props }) => (
-              <tr className="hover:bg-zinc-700" {...props} />
-            ),
-          }}
         >
-          {message.content.replace(/\n/gi, "&nbsp; \n")}
+          {message.content}
         </ReactMarkdown>
       ) : (
         <div className="flex flex-col space-y-2">
