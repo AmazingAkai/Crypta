@@ -26,6 +26,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { deepgramTTSModels, models } from "@/lib/constants";
 import type { Message } from "@/lib/types";
+import { getLocalStorageModel } from "@/lib/utils";
 
 const decoder = new TextDecoder();
 const MAX_AUDIO_SIZE = 5 * 1024 * 1024; // 5 MB
@@ -246,6 +247,14 @@ export default function Home() {
   };
 
   useEffect(() => {
+    setSelectedModel(getLocalStorageModel(models, "model") || models[0].name);
+    setSelectedTTSModel(
+      getLocalStorageModel(deepgramTTSModels, "ttsModel") ||
+        deepgramTTSModels[0].name
+    );
+  }, []);
+
+  useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop =
         chatContainerRef.current.scrollHeight;
@@ -344,7 +353,13 @@ export default function Home() {
               </DialogHeader>
               <SelectGroup>
                 <SelectLabel>LLM:</SelectLabel>
-                <Select value={selectedModel} onValueChange={setSelectedModel}>
+                <Select
+                  value={selectedModel}
+                  onValueChange={(value) => {
+                    setSelectedModel(value);
+                    localStorage.setItem("model", value);
+                  }}
+                >
                   <SelectTrigger>
                     <SelectValue>{selectedModel}</SelectValue>
                   </SelectTrigger>
@@ -366,7 +381,10 @@ export default function Home() {
                 <SelectLabel>TTS:</SelectLabel>
                 <Select
                   value={selectedTTSModel}
-                  onValueChange={setSelectedTTSModel}
+                  onValueChange={(value) => {
+                    setSelectedTTSModel(value);
+                    localStorage.setItem("ttsModel", value);
+                  }}
                 >
                   <SelectTrigger>
                     <SelectValue>{selectedTTSModel}</SelectValue>
