@@ -1,5 +1,14 @@
 export const models = [
   {
+    name: "mistralai/Mistral-7B-Instruct-v0.3",
+    description:
+      "Mistral-7B-Instruct is a fine-tuned version of Mistral's 7B model.",
+  },
+  {
+    name: "mistralai/Mixtral-8x22B-Instruct-v0.1",
+    description: "Mixtral-8x22B is Mistral's largest fully-open model.",
+  },
+  {
     name: "meta-llama/Meta-Llama-3.1-405B-Instruct",
     description: "Meta's premiere model. Friendly and a smart creative writer.",
   },
@@ -23,34 +32,9 @@ export const models = [
     name: "Qwen/Qwen2.5-Coder-32B-Instruct",
     description: "Alibaba's latest coding-focused model.",
   },
-  {
-    name: "mistralai/Mistral-7B-Instruct-v0.3",
-    description:
-      "Mistral-7B-Instruct is a fine-tuned version of Mistral's 7B model.",
-  },
-  {
-    name: "mistralai/Mixtral-8x22B-Instruct-v0.1",
-    description: "Mixtral-8x22B is Mistral's largest fully-open model.",
-  },
 ];
 
-export const deepgramTTSModels = [
-  {
-    name: "Asteria",
-    style: "American, feminine",
-  },
-  {
-    name: "Orpheus",
-    style: "American, masculine",
-  },
-  {
-    name: "Angus",
-    style: "Irish, masculine",
-  },
-  {
-    name: "Arcas",
-    style: "American, masculine",
-  },
+export const ttsModels = [
   {
     name: "Athena",
     style: "British, feminine",
@@ -59,6 +43,20 @@ export const deepgramTTSModels = [
     name: "Helios",
     style: "British, masculine",
   },
+  {
+    name: "Asteria",
+    style: "American, feminine",
+  },
+  {
+    name: "Orpheus",
+    style: "American, masculine",
+  },
+
+  {
+    name: "Arcas",
+    style: "American, masculine",
+  },
+
   {
     name: "Hera",
     style: "American, feminine",
@@ -82,5 +80,9 @@ export const deepgramTTSModels = [
   {
     name: "Zeus",
     style: "American, masculine",
+  },
+  {
+    name: "Angus",
+    style: "Irish, masculine",
   },
 ];

@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/select";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { deepgramTTSModels, models } from "@/lib/constants";
+import { ttsModels, models } from "@/lib/constants";
 import type { Message } from "@/lib/types";
 import { getLocalStorageModel } from "@/lib/utils";
 
@@ -38,9 +38,7 @@ export default function Home() {
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedModel, setSelectedModel] = useState(models[0].name);
-  const [selectedTTSModel, setSelectedTTSModel] = useState(
-    deepgramTTSModels[0].name
-  );
+  const [selectedTTSModel, setSelectedTTSModel] = useState(ttsModels[0].name);
   const [isRecording, setIsRecording] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -249,8 +247,7 @@ export default function Home() {
   useEffect(() => {
     setSelectedModel(getLocalStorageModel(models, "model") || models[0].name);
     setSelectedTTSModel(
-      getLocalStorageModel(deepgramTTSModels, "ttsModel") ||
-        deepgramTTSModels[0].name
+      getLocalStorageModel(ttsModels, "ttsModel") || ttsModels[0].name
     );
   }, []);
 
@@ -390,7 +387,7 @@ export default function Home() {
                     <SelectValue>{selectedTTSModel}</SelectValue>
                   </SelectTrigger>
                   <SelectContent className="max-h-60 overflow-auto">
-                    {deepgramTTSModels.map((ttsModel) => (
+                    {ttsModels.map((ttsModel) => (
                       <SelectItem key={ttsModel.name} value={ttsModel.name}>
                         <div className="flex flex-col">
                           <span>{ttsModel.name}</span>
